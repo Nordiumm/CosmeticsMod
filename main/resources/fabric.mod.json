@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "cosmetics",
+  "version": "${version}",
+  "name": "Cosmetics",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/cosmetics/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "fabric-datagen": [
+      "org.nordiumm.cosmetics.client.CosmeticsDataGenerator"
+    ],
+    "client": [
+      "org.nordiumm.cosmetics.client.CosmeticsClient"
+    ],
+    "main": [
+      "org.nordiumm.cosmetics.Cosmetics"
+    ]
+  },
+  "mixins": [
+    "cosmetics.mixins.json",
+    {
+      "config": "cosmetics.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
