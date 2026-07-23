@@ -2,6 +2,8 @@ package org.nordiumm.cosmetics.client.mixin;
 
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.entity.ItemOwner;
@@ -14,8 +16,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.jspecify.annotations.Nullable;
 
+
 @Mixin(ItemModelResolver.class)
 public class ItemModelResolverMixin {
+
 
     @Inject(
             method = "appendItemLayers",
@@ -31,11 +35,27 @@ public class ItemModelResolverMixin {
             CallbackInfo ci
     ) {
 
+
         Cosmetic cosmetic = ItemCosmeticMatcher.getCosmetic(item);
 
+
         if (cosmetic != null) {
+
+
+            Identifier cosmeticModel =
+                    Identifier.parse(
+                            "cosmetics:item/" + cosmetic.getId()
+                    );
+
+
+            item.set(
+                    DataComponents.ITEM_MODEL,
+                    cosmeticModel
+            );
+
+
             System.out.println(
-                    "Found cosmetic model: " + cosmetic.getId()
+                    "Changed model to: " + cosmeticModel
             );
         }
     }

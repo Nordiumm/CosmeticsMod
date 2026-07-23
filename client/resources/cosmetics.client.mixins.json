@@ -4,7 +4,11 @@
   "package": "org.nordiumm.cosmetics.client.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
-    "ItemModelResolverMixin"
+    "ItemModelResolverMixin",
+    "ModelManagerMixin"
+  ],
+  "mixins": [
+    "ModelManagerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

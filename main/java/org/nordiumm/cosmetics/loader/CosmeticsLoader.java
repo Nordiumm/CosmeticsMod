@@ -1,5 +1,6 @@
 package org.nordiumm.cosmetics.loader;
 
+import net.minecraft.resources.Identifier;
 import org.nordiumm.cosmetics.data.Cosmetic;
 
 import java.util.ArrayList;
@@ -19,5 +20,17 @@ public class CosmeticsLoader {
 
     public static void clear() {
         COSMETICS.clear();
+    }
+
+    public static Cosmetic getCosmeticForItem(Identifier itemId) {
+
+        for (Cosmetic cosmetic : COSMETICS) {
+
+            if (cosmetic.getItem().equals(itemId.toString())) {
+                return cosmetic;
+            }
+        }
+
+        return null;
     }
 }
