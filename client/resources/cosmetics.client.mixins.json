@@ -1,9 +1,10 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "org.nordiumm.cosmetics.mixin.client",
+  "package": "org.nordiumm.cosmetics.client.mixin",
   "compatibilityLevel": "JAVA_25",
   "client": [
+    "ItemModelResolverMixin"
   ],
   "injectors": {
     "defaultRequire": 1
