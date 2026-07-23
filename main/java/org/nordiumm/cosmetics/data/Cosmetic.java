@@ -7,13 +7,15 @@ public class Cosmetic {
     private final String item;
     private final String texture;
     private final String model;
+    private final String override;
 
-    public Cosmetic(String id, String name, String item, String texture, String model) {
+    public Cosmetic(String id, String name, String item, String texture, String model, String override) {
         this.id = id;
         this.name = name;
         this.item = item;
         this.texture = texture;
         this.model = model;
+        this.override = override;
     }
 
     public String getId() {
@@ -35,4 +37,6 @@ public class Cosmetic {
     public String getModel() {
         return model;
     }
+
+    public String getOverride() {return override;}
 }

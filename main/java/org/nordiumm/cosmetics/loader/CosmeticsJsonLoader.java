@@ -14,6 +14,8 @@ public class CosmeticsJsonLoader {
             return;
         }
 
+        CosmeticsLoader.clear();
+
         JsonObject json = JsonParser
                 .parseString(jsonText)
                 .getAsJsonObject();
@@ -30,7 +32,10 @@ public class CosmeticsJsonLoader {
                             cosmetic.get("name").getAsString(),
                             cosmetic.get("item").getAsString(),
                             cosmetic.get("texture").getAsString(),
-                            cosmetic.get("model").getAsString()
+                            cosmetic.get("model").getAsString(),
+                            cosmetic.has("override")
+                                    ? cosmetic.get("override").getAsString()
+                                    : null
                     )
             );
         }
