@@ -8,6 +8,7 @@ import org.nordiumm.cosmetics.loader.CosmeticsLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class CosmeticPackGenerator {
@@ -16,20 +17,32 @@ public class CosmeticPackGenerator {
             Path.of("cosmetics_cache/NordiummCosmetics");
 
 
+
     public static void generate() {
 
         try {
 
-            System.out.println("=== GENERATING COSMETIC PACK ===");
+            System.out.println(
+                    "=== GENERATING COSMETIC PACK ==="
+            );
 
 
-            Set<String> generatedItems = new HashSet<>();
+            Set<String> generatedItems =
+                    new HashSet<>();
 
 
-            for (Cosmetic cosmetic : CosmeticsLoader.getAll()) {
+
+            /*
+             * Generate normal cosmetic items
+             */
+            for (Cosmetic cosmetic :
+                    CosmeticsLoader.getAll()) {
 
 
-                String item = cosmetic.getItem();
+                String item =
+                        normalizeItem(
+                                cosmetic.getItem()
+                        );
 
 
                 if (item == null) {
@@ -47,11 +60,42 @@ public class CosmeticPackGenerator {
             }
 
 
+
+            /*
+             * Generate always_use items
+             * even if they are not in cosmetics JSON
+             */
+            for (Map.Entry<String, String> entry :
+                    CosmeticConfig.getAlwaysUseEntries()
+                            .entrySet()) {
+
+
+                String item =
+                        normalizeItem(
+                                entry.getKey()
+                        );
+
+
+                if (generatedItems.add(item)) {
+
+
+                    generateItemFile(item);
+
+                }
+
+            }
+
+
+
             System.out.println(
                     "Generated cosmetic item overrides!"
             );
 
-            System.out.println("==============================");
+
+            System.out.println(
+                    "=============================="
+            );
+
 
 
         } catch (Exception e) {
@@ -59,22 +103,33 @@ public class CosmeticPackGenerator {
             e.printStackTrace();
 
         }
+
     }
 
 
 
-    private static void generateItemFile(String item)
-            throws Exception {
 
 
-        JsonObject root = new JsonObject();
+
+
+    private static void generateItemFile(
+            String item
+    ) throws Exception {
+
+
+        JsonObject root =
+                new JsonObject();
+
 
 
         /*
-         * Check if this item has a forced cosmetic
+         * Always use cosmetic
          */
+
         String forcedCosmetic =
-                CosmeticConfig.getAlwaysUse(item);
+                CosmeticConfig.getAlwaysUse(
+                        item
+                );
 
 
 
@@ -104,14 +159,16 @@ public class CosmeticPackGenerator {
             );
 
 
+
             writeFile(
                     item,
                     root
             );
 
 
+
             System.out.println(
-                    "Forced cosmetic: "
+                    "Forced cosmetic applied: "
                             + item
                             + " -> "
                             + forcedCosmetic
@@ -119,17 +176,22 @@ public class CosmeticPackGenerator {
 
 
             return;
+
         }
 
 
 
-        /*
-         * Normal renamed cosmetic system
-         */
 
+
+
+
+        /*
+         * Normal renamed cosmetics
+         */
 
         JsonObject model =
                 new JsonObject();
+
 
 
         model.addProperty(
@@ -166,14 +228,23 @@ public class CosmeticPackGenerator {
 
 
 
-            if (!item.equals(cosmetic.getItem())) {
+            if (!item.equals(
+                    normalizeItem(
+                            cosmetic.getItem()
+                    )
+            )) {
+
                 continue;
+
             }
+
 
 
             if (cosmetic.getName() == null ||
                     cosmetic.getModel() == null) {
+
                 continue;
+
             }
 
 
@@ -181,7 +252,9 @@ public class CosmeticPackGenerator {
             if (!addedNames.add(
                     cosmetic.getName()
             )) {
+
                 continue;
+
             }
 
 
@@ -202,10 +275,12 @@ public class CosmeticPackGenerator {
                     new JsonObject();
 
 
+
             cosmeticModel.addProperty(
                     "type",
                     "minecraft:model"
             );
+
 
 
             cosmeticModel.addProperty(
@@ -215,13 +290,16 @@ public class CosmeticPackGenerator {
             );
 
 
+
             entry.add(
                     "model",
                     cosmeticModel
             );
 
 
+
             cases.add(entry);
+
         }
 
 
@@ -254,6 +332,7 @@ public class CosmeticPackGenerator {
         );
 
 
+
         model.add(
                 "fallback",
                 fallback
@@ -272,7 +351,38 @@ public class CosmeticPackGenerator {
                 item,
                 root
         );
+
     }
+
+
+
+
+
+
+
+    private static String normalizeItem(
+            String item
+    ) {
+
+        if (item == null) {
+            return null;
+        }
+
+
+        if (!item.contains(":")) {
+
+            return "minecraft:" + item;
+
+        }
+
+
+        return item;
+
+    }
+
+
+
+
 
 
 
@@ -293,9 +403,11 @@ public class CosmeticPackGenerator {
                 );
 
 
+
         Files.createDirectories(
                 output.getParent()
         );
+
 
 
         Files.writeString(
@@ -307,9 +419,12 @@ public class CosmeticPackGenerator {
         );
 
 
+
         System.out.println(
                 "Generated: "
                         + output
         );
+
     }
+
 }

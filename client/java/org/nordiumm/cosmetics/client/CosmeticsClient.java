@@ -19,7 +19,11 @@ public class CosmeticsClient implements ClientModInitializer {
 
         CosmeticsJsonLoader.load(json);
 
-        CosmeticDownloader.downloadAll();
+        if (CosmeticConfig.isEnabled()) {
+
+            CosmeticDownloader.downloadAll();
+
+        }
 
         CosmeticsCommand.register();
     }
