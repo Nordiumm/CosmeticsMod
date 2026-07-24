@@ -1,6 +1,7 @@
 package org.nordiumm.cosmetics.client.resource;
 
 import com.google.gson.*;
+import org.nordiumm.cosmetics.client.config.CosmeticConfig;
 import org.nordiumm.cosmetics.data.Cosmetic;
 import org.nordiumm.cosmetics.loader.CosmeticsLoader;
 
@@ -22,7 +23,6 @@ public class CosmeticPackGenerator {
             System.out.println("=== GENERATING COSMETIC PACK ===");
 
 
-            // Group cosmetics by item
             Set<String> generatedItems = new HashSet<>();
 
 
@@ -33,10 +33,6 @@ public class CosmeticPackGenerator {
 
 
                 if (item == null) {
-                    System.out.println(
-                            "Skipping cosmetic without item: "
-                                    + cosmetic.getId()
-                    );
                     continue;
                 }
 
@@ -54,7 +50,6 @@ public class CosmeticPackGenerator {
             System.out.println(
                     "Generated cosmetic item overrides!"
             );
-
 
             System.out.println("==============================");
 
@@ -75,17 +70,79 @@ public class CosmeticPackGenerator {
         JsonObject root = new JsonObject();
 
 
-        JsonObject model = new JsonObject();
+        /*
+         * Check if this item has a forced cosmetic
+         */
+        String forcedCosmetic =
+                CosmeticConfig.getAlwaysUse(item);
+
+
+
+        if (forcedCosmetic != null) {
+
+
+            JsonObject forcedModel =
+                    new JsonObject();
+
+
+            forcedModel.addProperty(
+                    "type",
+                    "minecraft:model"
+            );
+
+
+            forcedModel.addProperty(
+                    "model",
+                    "minecraft:item/"
+                            + forcedCosmetic
+            );
+
+
+            root.add(
+                    "model",
+                    forcedModel
+            );
+
+
+            writeFile(
+                    item,
+                    root
+            );
+
+
+            System.out.println(
+                    "Forced cosmetic: "
+                            + item
+                            + " -> "
+                            + forcedCosmetic
+            );
+
+
+            return;
+        }
+
+
+
+        /*
+         * Normal renamed cosmetic system
+         */
+
+
+        JsonObject model =
+                new JsonObject();
+
 
         model.addProperty(
                 "type",
                 "minecraft:select"
         );
 
+
         model.addProperty(
                 "property",
                 "minecraft:component"
         );
+
 
         model.addProperty(
                 "component",
@@ -93,13 +150,20 @@ public class CosmeticPackGenerator {
         );
 
 
-        JsonArray cases = new JsonArray();
+
+        JsonArray cases =
+                new JsonArray();
 
 
-        Set<String> addedNames = new HashSet<>();
+
+        Set<String> addedNames =
+                new HashSet<>();
 
 
-        for (Cosmetic cosmetic : CosmeticsLoader.getAll()) {
+
+        for (Cosmetic cosmetic :
+                CosmeticsLoader.getAll()) {
+
 
 
             if (!item.equals(cosmetic.getItem())) {
@@ -113,22 +177,10 @@ public class CosmeticPackGenerator {
             }
 
 
-            System.out.println(
-                    cosmetic.getId()
-                            + " | "
-                            + cosmetic.getName()
-                            + " | "
-                            + cosmetic.getModel()
-            );
 
-
-            if (!addedNames.add(cosmetic.getName())) {
-
-                System.out.println(
-                        "Duplicate name skipped: "
-                                + cosmetic.getName()
-                );
-
+            if (!addedNames.add(
+                    cosmetic.getName()
+            )) {
                 continue;
             }
 
@@ -136,6 +188,7 @@ public class CosmeticPackGenerator {
 
             JsonObject entry =
                     new JsonObject();
+
 
 
             entry.addProperty(
@@ -184,6 +237,7 @@ public class CosmeticPackGenerator {
                 new JsonObject();
 
 
+
         fallback.addProperty(
                 "type",
                 "minecraft:model"
@@ -212,6 +266,20 @@ public class CosmeticPackGenerator {
                 model
         );
 
+
+
+        writeFile(
+                item,
+                root
+        );
+    }
+
+
+
+    private static void writeFile(
+            String item,
+            JsonObject root
+    ) throws Exception {
 
 
         Path output =

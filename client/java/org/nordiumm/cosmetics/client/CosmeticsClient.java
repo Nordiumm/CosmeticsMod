@@ -5,6 +5,7 @@ import org.nordiumm.cosmetics.loader.CosmeticsJsonLoader;
 import org.nordiumm.cosmetics.loader.GitHubCosmeticsLoader;
 import org.nordiumm.cosmetics.client.resource.CosmeticDownloader;
 import org.nordiumm.cosmetics.client.command.CosmeticsCommand;
+import org.nordiumm.cosmetics.client.config.CosmeticConfig;
 
 public class CosmeticsClient implements ClientModInitializer {
 
@@ -12,6 +13,7 @@ public class CosmeticsClient implements ClientModInitializer {
     public void onInitializeClient() {
 
         System.out.println("Cosmetics client initialized!");
+        CosmeticConfig.load();
 
         String json = GitHubCosmeticsLoader.download();
 
