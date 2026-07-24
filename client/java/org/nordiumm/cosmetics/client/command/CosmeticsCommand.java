@@ -9,6 +9,7 @@ import org.nordiumm.cosmetics.data.Cosmetic;
 import org.nordiumm.cosmetics.loader.CosmeticsJsonLoader;
 import org.nordiumm.cosmetics.loader.CosmeticsLoader;
 import org.nordiumm.cosmetics.loader.GitHubCosmeticsLoader;
+import org.nordiumm.cosmetics.client.config.CosmeticConfig;
 
 public class CosmeticsCommand {
 
@@ -54,23 +55,18 @@ public class CosmeticsCommand {
                 "§7Refreshing cosmetics..."
         );
 
-
         CosmeticsLoader.clear();
-
 
         String json =
                 GitHubCosmeticsLoader.download();
 
-
         CosmeticsJsonLoader.load(json);
 
 
+        CosmeticConfig.reload();
+
+
         CosmeticDownloader.downloadAll();
-
-
-        sendMessage(
-                "§7Cosmetics refreshed!"
-        );
     }
 
 
@@ -86,12 +82,6 @@ public class CosmeticsCommand {
 
             return;
         }
-
-
-
-        sendMessage(
-                "§7=== Loaded Cosmetics ==="
-        );
 
 
         for (Cosmetic cosmetic :

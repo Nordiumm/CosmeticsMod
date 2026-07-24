@@ -4,7 +4,7 @@
   "version": "${version}",
   "name": "Cosmetics",
   "description": "",
-  "authors": [],
+  "authors": ["Nordiumm"],
   "contact": {},
   "license": "All-Rights-Reserved",
   "icon": "assets/cosmetics/icon.png",
