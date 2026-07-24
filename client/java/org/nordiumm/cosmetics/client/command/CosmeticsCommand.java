@@ -51,7 +51,7 @@ public class CosmeticsCommand {
     private static void refresh() {
 
         sendMessage(
-                "&7Refreshing cosmetics..."
+                "§7Refreshing cosmetics..."
         );
 
 
@@ -69,7 +69,7 @@ public class CosmeticsCommand {
 
 
         sendMessage(
-                "&7Cosmetics refreshed!"
+                "§7Cosmetics refreshed!"
         );
     }
 
@@ -90,7 +90,7 @@ public class CosmeticsCommand {
 
 
         sendMessage(
-                "&7=== Loaded Cosmetics ==="
+                "§7=== Loaded Cosmetics ==="
         );
 
 
@@ -111,7 +111,7 @@ public class CosmeticsCommand {
 
 
         sendMessage(
-                "&7Total cosmetics: "
+                "§7Total cosmetics: "
                         + CosmeticsLoader.getAll().size()
         );
     }
