@@ -4,10 +4,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
+import org.nordiumm.cosmetics.client.config.CosmeticConfig;
 
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 
 
@@ -22,9 +27,7 @@ public class UpdateChecker {
             "https://api.github.com/repos/Nordiumm/CosmeticsMod/releases/latest";
 
 
-
     private static boolean checked = false;
-
 
 
 
@@ -53,12 +56,10 @@ public class UpdateChecker {
 
 
 
-
             HttpURLConnection connection =
                     (HttpURLConnection)
                             new URL(GITHUB_API)
                                     .openConnection();
-
 
 
             connection.setRequestProperty(
@@ -89,15 +90,14 @@ public class UpdateChecker {
 
 
 
-            String download =
+            String releaseUrl =
                     release.get("html_url")
                             .getAsString();
 
 
 
 
-
-            String last =
+            String lastNotified =
                     UpdateCache.getLastNotifiedVersion();
 
 
@@ -105,26 +105,30 @@ public class UpdateChecker {
 
             if (!currentVersion.equals(latestVersion)
                     &&
-                    !latestVersion.equals(last)) {
+                    !latestVersion.equals(lastNotified)) {
 
 
 
                 sendMessage(
-                        "§b[NordiummCosmetics] §fNew update available!"
+                        Component.literal(
+                                "§b[NordiummCosmetics] §fNew update available!"
+                        )
                 );
 
 
                 sendMessage(
-                        "§7Current: §f"
-                                + currentVersion
-                                + " §7→ Latest: §a"
-                                + latestVersion
+                        Component.literal(
+                                "§7Current: §f"
+                                        + currentVersion
+                                        + " §7→ Latest: §a"
+                                        + latestVersion
+                        )
                 );
 
 
-                sendMessage(
-                        "§eDownload: §9"
-                                + download
+
+                sendClickableDownload(
+                        releaseUrl
                 );
 
 
@@ -133,20 +137,44 @@ public class UpdateChecker {
                         latestVersion
                 );
 
+
             }
 
+
+
+            if (CosmeticConfig.isDebug()) {
+
+
+                System.out.println(
+                        "[NordiummCosmetics] Update check:"
+                );
+
+
+                System.out.println(
+                        "Current: "
+                                + currentVersion
+                );
+
+
+                System.out.println(
+                        "Latest: "
+                                + latestVersion
+                );
+
+
+            }
 
 
 
         } catch (Exception e) {
 
 
-            System.out.println(
-                    "[NordiummCosmetics] Update check failed."
-            );
+            if (CosmeticConfig.isDebug()) {
 
+                e.printStackTrace();
 
-            e.printStackTrace();
+            }
+
 
         }
 
@@ -158,9 +186,57 @@ public class UpdateChecker {
 
 
 
+    private static void sendClickableDownload(
+            String url
+    ) {
+
+
+        Minecraft minecraft =
+                Minecraft.getInstance();
+
+
+
+        if (minecraft.player == null) {
+            return;
+        }
+
+
+
+        Component download =
+                Component.literal(
+                                "§e[Click here to download]"
+                        )
+                        .setStyle(
+                                Style.EMPTY
+                                        .withClickEvent(
+                                                new ClickEvent.OpenUrl(
+                                                        URI.create(url)
+                                                )
+                                        )
+                                        .withHoverEvent(
+                                                new HoverEvent.ShowText(
+                                                        Component.literal(
+                                                                "§7Open GitHub release page"
+                                                        )
+                                                )
+                                        )
+                        );
+
+
+
+        minecraft.player.sendSystemMessage(
+                download
+        );
+
+    }
+
+
+
+
+
 
     private static void sendMessage(
-            String message
+            Component message
     ) {
 
 
@@ -173,7 +249,7 @@ public class UpdateChecker {
 
 
             minecraft.player.sendSystemMessage(
-                    Component.literal(message)
+                    message
             );
 
 
