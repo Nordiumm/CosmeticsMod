@@ -15,7 +15,7 @@ public class UpdateChecker {
 
 
     private static final String MOD_ID =
-            "nordiummcosmetics";
+            "cosmetics";
 
 
     private static final String GITHUB_API =
