@@ -1,6 +1,5 @@
 package org.nordiumm.cosmetics.client.command;
 
-import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.minecraft.client.Minecraft;
@@ -16,12 +15,8 @@ import org.nordiumm.cosmetics.loader.GitHubCosmeticsLoader;
 public class CosmeticsCommand {
 
 
-    private static final String OWNER_UUID =
-            "827437eb-ee7e-4a3a-9ebe-8398a0ba520d";
-
-
-
     public static void register() {
+
 
         ClientCommandRegistrationCallback.EVENT.register(
                 (dispatcher, registryAccess) -> {
@@ -38,6 +33,7 @@ public class CosmeticsCommand {
                                                         refresh();
 
                                                         return 1;
+
                                                     })
                                     )
 
@@ -49,58 +45,19 @@ public class CosmeticsCommand {
                                                         listCosmetics();
 
                                                         return 1;
+
                                                     })
                                     )
 
-
-                                    .then(
-                                            ClientCommands.literal("toast")
-                                                    .then(
-                                                            ClientCommands.argument(
-                                                                            "text",
-                                                                            StringArgumentType.greedyString()
-                                                                    )
-                                                                    .executes(context -> {
-
-
-                                                                        if (!isOwner()) {
-
-                                                                            sendMessage(
-                                                                                    "§cNo permission."
-                                                                            );
-
-                                                                            return 0;
-                                                                        }
-
-
-
-                                                                        String text =
-                                                                                StringArgumentType.getString(
-                                                                                        context,
-                                                                                        "text"
-                                                                                );
-
-
-
-                                                                        showToast(
-                                                                                "Cosmetics",
-                                                                                text
-                                                                        );
-
-
-
-                                                                        return 1;
-
-                                                                    })
-                                                    )
-                                    )
-
                     );
+
 
                 }
         );
 
     }
+
+
 
 
 
@@ -118,7 +75,7 @@ public class CosmeticsCommand {
 
 
             sendMessage(
-                    "§cCosmetics refresh command disabled in config."
+                    "§cCosmetics refresh command disabled."
             );
 
 
@@ -143,6 +100,7 @@ public class CosmeticsCommand {
 
 
 
+
         try {
 
 
@@ -159,11 +117,20 @@ public class CosmeticsCommand {
 
 
 
-            CosmeticConfig.reload();
-
-
-
             CosmeticDownloader.downloadAll();
+
+
+
+
+
+            if (CosmeticConfig.notifications()) {
+
+
+                sendMessage(
+                        "§aCosmetics refreshed!"
+                );
+
+            }
 
 
 
@@ -173,11 +140,10 @@ public class CosmeticsCommand {
 
 
                 System.out.println(
-                        "Cosmetics refresh completed."
+                        "[NordiummCosmetics] Refresh complete."
                 );
 
             }
-
 
 
 
@@ -187,20 +153,10 @@ public class CosmeticsCommand {
 
             e.printStackTrace();
 
-
-
-            sendMessage(
-                    "§cFailed to refresh cosmetics!"
-            );
-
         }
 
+
     }
-
-
-
-
-
 
 
 
@@ -216,14 +172,13 @@ public class CosmeticsCommand {
 
 
             sendMessage(
-                    "§cCosmetics list command disabled in config."
+                    "§cCosmetics list command disabled."
             );
 
 
             return;
 
         }
-
 
 
 
@@ -242,6 +197,13 @@ public class CosmeticsCommand {
         }
 
 
+
+
+
+
+        sendMessage(
+                "§bLoaded cosmetics:"
+        );
 
 
 
@@ -268,7 +230,6 @@ public class CosmeticsCommand {
 
 
 
-
         if (CosmeticConfig.notifications()) {
 
 
@@ -277,8 +238,8 @@ public class CosmeticsCommand {
                             + CosmeticsLoader.getAll().size()
             );
 
-        }
 
+        }
 
 
 
@@ -288,78 +249,17 @@ public class CosmeticsCommand {
 
 
             System.out.println(
-                    "Listed "
+                    "[NordiummCosmetics] Listed "
                             + CosmeticsLoader.getAll().size()
                             + " cosmetics."
             );
 
-        }
-
-    }
-
-
-
-
-
-
-
-
-
-    private static boolean isOwner() {
-
-
-        Minecraft minecraft =
-                Minecraft.getInstance();
-
-
-
-        if (minecraft.player == null) {
-
-            return false;
 
         }
 
 
-
-        return minecraft.player
-                .getUUID()
-                .toString()
-                .equals(
-                        OWNER_UUID
-                );
-
     }
 
-
-
-
-
-
-
-
-
-    private static void showToast(
-            String title,
-            String message
-    ) {
-
-
-        /*
-         * Temporary testing output.
-         *
-         * Replace this later with:
-         * CosmeticToast.show(title,message);
-         */
-
-        sendMessage(
-                "§6[Toast] §f"
-                        + title
-                        + ": "
-                        + message
-        );
-
-
-    }
 
 
 
@@ -375,6 +275,7 @@ public class CosmeticsCommand {
 
         Minecraft minecraft =
                 Minecraft.getInstance();
+
 
 
 
