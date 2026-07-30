@@ -27,20 +27,8 @@ public class UpdateChecker {
             "https://api.github.com/repos/Nordiumm/CosmeticsMod/releases/latest";
 
 
-    private static boolean checked = false;
-
-
 
     public static void check() {
-
-
-        if (checked) {
-            return;
-        }
-
-
-        checked = true;
-
 
 
         try {
@@ -62,6 +50,7 @@ public class UpdateChecker {
                                     .openConnection();
 
 
+
             connection.setRequestProperty(
                     "User-Agent",
                     "NordiummCosmetics"
@@ -76,7 +65,6 @@ public class UpdateChecker {
                                     )
                             )
                             .getAsJsonObject();
-
 
 
 
@@ -96,17 +84,10 @@ public class UpdateChecker {
 
 
 
-
-            String lastNotified =
-                    UpdateCache.getLastNotifiedVersion();
-
-
-
-
-            if (!currentVersion.equals(latestVersion)
-                    &&
-                    !latestVersion.equals(lastNotified)) {
-
+            if (isNewerVersion(
+                    latestVersion,
+                    currentVersion
+            )) {
 
 
                 sendMessage(
@@ -114,6 +95,7 @@ public class UpdateChecker {
                                 "§b[NordiummCosmetics] §fNew update available!"
                         )
                 );
+
 
 
                 sendMessage(
@@ -132,12 +114,6 @@ public class UpdateChecker {
                 );
 
 
-
-                UpdateCache.setLastNotifiedVersion(
-                        latestVersion
-                );
-
-
             }
 
 
@@ -146,7 +122,7 @@ public class UpdateChecker {
 
 
                 System.out.println(
-                        "[NordiummCosmetics] Update check:"
+                        "[NordiummCosmetics] Update check"
                 );
 
 
@@ -186,6 +162,86 @@ public class UpdateChecker {
 
 
 
+
+    private static boolean isNewerVersion(
+            String latest,
+            String current
+    ) {
+
+
+        try {
+
+
+            String[] latestParts =
+                    latest.split("\\.");
+
+
+
+            String[] currentParts =
+                    current.split("\\.");
+
+
+
+            int length =
+                    Math.max(
+                            latestParts.length,
+                            currentParts.length
+                    );
+
+
+
+            for (int i = 0; i < length; i++) {
+
+
+                int latestNumber =
+                        i < latestParts.length
+                                ? Integer.parseInt(latestParts[i])
+                                : 0;
+
+
+
+                int currentNumber =
+                        i < currentParts.length
+                                ? Integer.parseInt(currentParts[i])
+                                : 0;
+
+
+
+                if (latestNumber > currentNumber) {
+
+                    return true;
+
+                }
+
+
+
+                if (latestNumber < currentNumber) {
+
+                    return false;
+
+                }
+
+            }
+
+
+        } catch (Exception ignored) {
+
+
+        }
+
+
+
+        return false;
+
+    }
+
+
+
+
+
+
+
+
     private static void sendClickableDownload(
             String url
     ) {
@@ -197,8 +253,11 @@ public class UpdateChecker {
 
 
         if (minecraft.player == null) {
+
             return;
+
         }
+
 
 
 
@@ -228,7 +287,10 @@ public class UpdateChecker {
                 download
         );
 
+
     }
+
+
 
 
 

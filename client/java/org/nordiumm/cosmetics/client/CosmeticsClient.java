@@ -1,7 +1,7 @@
 package org.nordiumm.cosmetics.client;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import org.nordiumm.cosmetics.loader.CosmeticsJsonLoader;
 import org.nordiumm.cosmetics.loader.GitHubCosmeticsLoader;
 import org.nordiumm.cosmetics.client.resource.CosmeticDownloader;
@@ -9,11 +9,8 @@ import org.nordiumm.cosmetics.client.command.CosmeticsCommand;
 import org.nordiumm.cosmetics.client.config.CosmeticConfig;
 import org.nordiumm.cosmetics.client.update.UpdateChecker;
 
+
 public class CosmeticsClient implements ClientModInitializer {
-
-
-    private static boolean checkedUpdate = false;
-
 
 
     @Override
@@ -31,7 +28,6 @@ public class CosmeticsClient implements ClientModInitializer {
 
         String json =
                 GitHubCosmeticsLoader.download();
-
 
 
         CosmeticsJsonLoader.load(json);
@@ -52,23 +48,15 @@ public class CosmeticsClient implements ClientModInitializer {
 
 
 
-
-        ClientTickEvents.END_CLIENT_TICK.register(
-                client -> {
-
-
-                    if (!checkedUpdate
-                            &&
-                            client.player != null) {
+        /*
+         * Check for mod updates when the player
+         * actually joins a world/server.
+         */
+        ClientPlayConnectionEvents.JOIN.register(
+                (handler, sender, client) -> {
 
 
-                        checkedUpdate = true;
-
-
-                        UpdateChecker.check();
-
-
-                    }
+                    UpdateChecker.check();
 
 
                 }
